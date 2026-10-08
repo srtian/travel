@@ -16,7 +16,7 @@ public/assets/                         # 本地图片
 
 日本每日文件的 frontmatter 包含 `quick`、`planItems`、`practical`、`photoSpots`、`dining` 等结构化信息，供地图与卡片使用；正文可写自由说明。斯里兰卡的完整说明目前保存在 Markdown 正文中。
 
-`scripts/migrate-content.mjs` 只用于**首次**从旧页面导入内容，日后不要再运行，否则会覆盖手工修改过的 Markdown。`docs/` 和仓库旧版根页面是迁移留档，不再作为新站的数据源。
+仓库旧版根页面是迁移留档，不再作为新站的数据源。日后直接编辑 Markdown 文件，再运行构建即可。
 
 ## 本地运行
 
