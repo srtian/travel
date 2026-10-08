@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 720" role="img" aria-label="斯里兰卡山海旅行插画">
+  <defs>
+    <linearGradient id="sea" x2="1" y2="1"><stop stop-color="#174f58"/><stop offset="1" stop-color="#0b2935"/></linearGradient>
+    <linearGradient id="land" x2="1" y2="1"><stop stop-color="#c8b979"/><stop offset=".55" stop-color="#5c8a63"/><stop offset="1" stop-color="#315d55"/></linearGradient>
+    <filter id="shadow"><feDropShadow dx="17" dy="25" stdDeviation="18" flood-color="#041920" flood-opacity=".55"/></filter>
+  </defs>
+  <rect width="1200" height="720" fill="url(#sea)"/>
+  <g fill="none" stroke="#e4d6a3" opacity=".15"><circle cx="600" cy="360" r="220"/><circle cx="600" cy="360" r="300"/><circle cx="600" cy="360" r="380"/><path d="M0 135h1200M0 360h1200M0 585h1200M230 0v720M600 0v720M970 0v720"/></g>
+  <path d="M615 87c-57 39-89 79-111 132-25 58-52 116-74 176-21 59-32 117-24 162 8 46 41 85 87 97 46 12 108-11 154-46 53-40 100-94 123-150 19-47 15-96-9-132-31-47-43-103-56-159-8-33-29-62-54-80-12-9-25-9-36 0z" fill="url(#land)" stroke="#f3e3ad" stroke-width="5" filter="url(#shadow)"/>
+  <path d="M473 469c69-20 152-12 236 27M480 390c69-8 149-42 224-104M539 245c58 28 105 62 152 104" fill="none" stroke="#f5e8b6" stroke-width="3" opacity=".45" stroke-linecap="round"/>
+  <g fill="#f8e9b8"><circle cx="561" cy="281" r="9"/><circle cx="641" cy="372" r="9"/><circle cx="533" cy="487" r="9"/><circle cx="620" cy="564" r="9"/></g>
+  <g fill="#f8e9b8" font-family="Georgia,serif" text-anchor="middle"><text x="600" y="75" font-size="29" letter-spacing="11">SRI LANKA</text><text x="600" y="690" font-size="17" letter-spacing="8">ISLAND • TEA • OCEAN</text></g>
+</svg>

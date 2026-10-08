@@ -1,0 +1,14 @@
+{
+  "name": "travel-journal",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "astro": "^7.3.6",
+    "yaml": "^2.8.1"
+  }
+}

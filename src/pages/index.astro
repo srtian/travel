@@ -1,0 +1,17 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+const trips=(await getCollection('trips')).sort((a,b)=>(a.data.order||0)-(b.data.order||0));
+const base=import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const cover = src => src?.startsWith('/') ? `${base}${src.slice(1)}` : src;
+---
+<Layout title="旅途手帖｜旅行攻略" description="日本关西与斯里兰卡旅行攻略，按目的地和日期整理。">
+  <main>
+    <section class="home-hero"><div class="wrap"><span class="eyebrow">THE TRAVEL JOURNAL</span><h1>下一段旅途<br /><em>从这里展开。</em></h1><p>把徒步、城市漫步、摄影时间和路上的美食，整理成真正能带走的旅行手帖。</p><a class="hero-link" href="#destinations">浏览目的地 <span aria-hidden="true">↗</span></a></div></section>
+    <section id="destinations" class="wrap home-content"><div class="section-heading"><div><span class="eyebrow">DESTINATIONS</span><h2>目的地攻略</h2></div><p>{trips.length} 段旅程 · 持续整理</p></div><div class="trip-grid">{trips.map((trip,index)=><a class="trip-card" href={`${base}trips/${trip.data.slug}/`}><div class="cover" style={`background-image:linear-gradient(0deg,#10281eb5,#10281e08 65%),url('${cover(trip.data.cover)}')`}><span class="number">{String(index+1).padStart(2,'0')}</span><span class="region">{trip.data.region}</span></div><div class="card-text"><h3>{trip.data.title}</h3><p>{trip.data.summary}</p><div><span>{trip.data.startDate} — {trip.data.endDate}</span><b>打开攻略 ↗</b></div></div></a>)}</div></section>
+  </main>
+</Layout>
+<script>if(new URLSearchParams(location.search).get('trip')==='japan') location.replace(`${import.meta.env.BASE_URL.replace(/\/?$/, '/')}trips/japan-2026/`);</script>
+<style>
+.home-hero{min-height:610px;display:flex;align-items:center;color:white;background:linear-gradient(90deg,#142e26ed,#142e2640),url('https://commons.wikimedia.org/wiki/Special:FilePath/Kumano%20Kodo%20pilgrimage%20route%20Daimon-zaka%20World%20heritage%20%E7%86%8A%E9%87%8E%E5%8F%A4%E9%81%93%20%E5%A4%A7%E9%96%80%E5%9D%8203.JPG?width=1200') center/cover}.home-hero .wrap{padding:80px 0}.home-hero .eyebrow{color:#f3d6a4}.home-hero h1{font-size:clamp(50px,7vw,90px);line-height:1.12;margin:18px 0 22px}.home-hero h1 em{color:#f2d4a1;font-style:normal}.home-hero p{font-size:19px;max-width:550px;color:#ebf0e9}.hero-link{display:inline-flex;gap:35px;margin-top:20px;padding:11px 17px;text-decoration:none;border:1px solid #ffffff8c;border-radius:999px;font-weight:700}.home-content{padding-top:60px}.trip-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}.trip-card{text-decoration:none;background:var(--card);border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:var(--shadow);transition:transform .2s,box-shadow .2s}.trip-card:hover{transform:translateY(-4px);box-shadow:0 25px 50px #142a2025}.cover{height:285px;background-size:cover;background-position:center;position:relative;display:flex;align-items:end;justify-content:space-between;padding:20px;color:white}.number{position:absolute;top:18px;left:20px;font:700 28px 'Noto Serif SC',serif}.region{font-weight:700}.card-text{padding:22px}.card-text h3{font-size:22px;margin:0 0 9px}.card-text p{margin:0 0 22px;color:var(--muted)}.card-text div{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:13px}.card-text b{color:var(--accent);white-space:nowrap}@media(max-width:680px){.home-hero{min-height:520px}.home-hero p{font-size:16px}.trip-grid{grid-template-columns:1fr}.cover{height:220px}}
+</style>

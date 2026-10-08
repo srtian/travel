@@ -1,0 +1,41 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import DayCard from '../../components/DayCard.astro';
+import { getCollection, render } from 'astro:content';
+export async function getStaticPaths(){
+  const trips=await getCollection('trips');
+  return trips.map(trip=>({params:{slug:trip.data.slug},props:{trip}}));
+}
+const {trip}=Astro.props;
+const {Content}=await render(trip);
+const days=(await getCollection('days',day=>day.data.trip===trip.data.slug)).sort((a,b)=>(a.data.order||0)-(b.data.order||0));
+const base=import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const cover=trip.data.cover?.startsWith('/')?`${base}${trip.data.cover.slice(1)}`:trip.data.cover;
+const isJapan=trip.data.slug==='japan-2026';
+const photoCredits=trip.data.photoCredits||[];
+const mapPoints=days.flatMap(day=>(day.data.slots||[]).filter(s=>s.lat&&s.lng).map(s=>({lat:s.lat,lng:s.lng,name:s.name})));
+---
+<Layout title={`${trip.data.title}｜旅途手帖`} description={trip.data.summary} image={cover}>
+  <main>
+    <section class="trip-hero" style={`background-image:linear-gradient(90deg,#102a21ee,#102a2166),url('${cover}')`}><div class="wrap"><a class="back" href={base}>← 全部旅行</a><span class="eyebrow">{trip.data.region} · {trip.data.startDate} — {trip.data.endDate}</span><h1>{isJapan?'山海之间':trip.data.title}</h1><p>{trip.data.subtitle}</p><div class="hero-chips"><span>{days.length} 天行程</span><span>每日简版与详细说明</span><span>手机可直接查看</span></div></div></section>
+    <div class="wrap trip-wrap">
+      <div class="overview panel"><span class="eyebrow">TRIP OVERVIEW</span><div class="prose"><Content /></div></div>
+      {trip.data.preTrip && <section class="trip-section"><div class="section-heading"><div><span class="eyebrow">BEFORE YOU GO</span><h2>行前准备</h2></div></div><div class="info-grid"><div class="panel info"><h3>天气与山径</h3><p>{trip.data.preTrip.weather.summary}</p><p>{trip.data.preTrip.weather.typhoon}</p></div><div class="panel info"><h3>装备与支付</h3><p>{trip.data.preTrip.packing}</p><p>{trip.data.preTrip.payment}</p></div><div class="panel info"><h3>交通与预订</h3><p>{trip.data.preTrip.ticketTip}</p><p>{trip.data.preTrip.apps?.join(' · ')}</p></div></div></section>}
+      {trip.data.reminders && <section class="trip-section"><div class="section-heading"><div><span class="eyebrow">CHECKLIST</span><h2>出发前待办</h2></div></div><div class="panel checklist">{trip.data.reminders.map(r=><label><input type="checkbox" data-check-id={`${trip.data.slug}:${r.item}`} /><span>{r.item}</span><small>提前 {r.leadDays} 天</small></label>)}</div></section>}
+      {isJapan && <section class="trip-section"><div class="section-heading"><div><span class="eyebrow">ROUTE MAP</span><h2>路线地图</h2></div><p>点击标记查看地点</p></div><div class="map-frame"><div id="route-map" aria-label="行程路线地图"></div><p id="map-fallback" hidden>地图暂时无法加载，下面的每日行程仍可阅读。</p></div></section>}
+      <section id="daily" class="trip-section"><div class="section-heading"><div><span class="eyebrow">DAY BY DAY</span><h2>每日行程</h2></div><p>先看简版，再展开细节</p></div><nav class="day-nav" aria-label="日期跳转">{days.map((day,i)=><a href={`#day-${i+1}`}>{day.data.date?.slice(5).replace('-','/')}</a>)}</nav><div class="day-list">{days.map((entry,i)=><DayCard entry={entry} index={i} />)}</div></section>
+      {trip.data.tips && <section class="trip-section"><div class="section-heading"><div><span class="eyebrow">FIELD NOTES</span><h2>全程贴士</h2></div></div><div class="panel notes">{trip.data.tips.map(t=><p>• {t}</p>)}</div></section>}
+      {trip.data.budget && <section class="trip-section"><div class="section-heading"><div><span class="eyebrow">BUDGET</span><h2>预算参考</h2></div></div><div class="panel budget"><strong>{trip.data.budget.total}</strong><p>{trip.data.budget.note}</p>{trip.data.budget.items?.map(row=><div><span>{row[0]}</span><b>{row[1]}</b></div>)}</div></section>}
+      {photoCredits.length>0 && <p class="credits">图片来源：{photoCredits.map(c=><a href={c.url} target="_blank" rel="noopener noreferrer">{c.label} ↗</a>)}</p>}
+    </div>
+  </main>
+</Layout>
+<script is:inline src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script define:vars={{mapPoints}}>
+  const mapRoot=document.getElementById('route-map');
+  if(mapRoot){try{if(!window.L)throw new Error('Map library unavailable');const m=L.map(mapRoot);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap contributors',maxZoom:19}).addTo(m);const coords=mapPoints.map((p,i)=>{const title=document.createElement('strong');title.textContent=`${i+1}. ${p.name}`;const a=document.createElement('a');a.href=`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${p.lat},${p.lng}`)}`;a.target='_blank';a.rel='noopener noreferrer';a.textContent='Google 地图 ↗';const popup=document.createElement('div');popup.append(title,document.createElement('br'),a);L.marker([p.lat,p.lng]).addTo(m).bindPopup(popup);return [p.lat,p.lng]});if(coords.length){L.polyline(coords,{color:'#b64f35',dashArray:'5 7'}).addTo(m);m.fitBounds(coords,{padding:[30,30]})}}catch(e){mapRoot.hidden=true;document.getElementById('map-fallback').hidden=false}}
+  document.querySelectorAll('[data-check-id]').forEach(input=>{const key='travel-check:'+input.dataset.checkId;try{input.checked=localStorage.getItem(key)==='1'}catch(e){}input.addEventListener('change',()=>{try{localStorage.setItem(key,input.checked?'1':'0')}catch(e){}})});
+</script>
+<style>
+.trip-hero{min-height:430px;background-position:center;background-size:cover;color:white;display:flex;align-items:end}.trip-hero .wrap{padding:55px 0}.back{display:block;width:max-content;color:#dce8db;text-decoration:none;font-size:13px;margin-bottom:40px}.trip-hero .eyebrow{color:#ead09d}.trip-hero h1{font-size:clamp(42px,6vw,74px);margin:12px 0}.trip-hero p{font-size:18px;max-width:620px}.hero-chips{display:flex;flex-wrap:wrap;gap:8px}.hero-chips span{padding:5px 10px;border:1px solid #ffffff66;border-radius:999px;font-size:12px}.trip-wrap{padding-top:35px}.overview{padding:26px 30px}.trip-section{margin-top:54px}.info-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.info{padding:20px}.info h3{font-size:18px;margin:0 0 12px}.info p{font-size:14px;color:var(--muted)}.checklist{padding:10px 22px}.checklist label{display:flex;align-items:start;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}.checklist label:last-child{border-bottom:0}.checklist input{accent-color:var(--pine);margin-top:5px;width:17px;height:17px}.checklist span{flex:1}.checklist small{color:var(--accent);white-space:nowrap}.map-frame{border-radius:22px;background:var(--forest);padding:15px;color:#fff}#route-map{height:440px;border-radius:12px}.day-nav{position:sticky;top:68px;z-index:30;display:flex;overflow:auto;gap:7px;padding:10px 0;background:var(--paper)}.day-nav a{text-decoration:none;white-space:nowrap;padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:white;font-size:12px;font-weight:700}.day-list{display:grid;gap:15px}.notes,.budget{padding:20px 25px}.notes p{margin:8px 0;color:var(--muted)}.budget strong{font-size:26px;color:var(--accent)}.budget p{color:var(--muted)}.budget div{display:flex;justify-content:space-between;padding:9px 0;border-top:1px solid var(--line)}.credits{font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;gap:8px}.credits a{color:var(--pine)}@media(max-width:750px){.info-grid{grid-template-columns:1fr}.trip-hero{min-height:350px}.trip-hero .wrap{padding:35px 0}.day-nav{top:58px}.checklist small{display:none}}
+</style>
