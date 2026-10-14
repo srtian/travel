@@ -8,6 +8,22 @@ endDate: "2026-11-10"
 cover: https://commons.wikimedia.org/wiki/Special:FilePath/Kumano%20Kodo%20pilgrimage%20route%20Daimon-zaka%20World%20heritage%20%E7%86%8A%E9%87%8E%E5%8F%A4%E9%81%93%20%E5%A4%A7%E9%96%80%E5%9D%8203.JPG?width=1200
 summary: 熊野古道、奈良、京都与大阪。11 天的徒步、摄影与城市漫步。
 order: 1
+travelTools:
+  - title: JR 西日本 · 列车查询
+    url: https://www.westjr.co.jp/global/en/timetable/search_jp/
+    note: 查询关西机场、纪伊田边、纪伊胜浦与京都等 JR 车次。
+  - title: JR 西日本 · 网上预订
+    url: https://www.westjr.co.jp/global/en/ticket/overview/
+    note: 黑潮号等特急的购票入口；按乘车日期重新查余票与换乘。
+  - title: 熊野地区 · 巴士时刻表
+    url: https://www.tb-kumano.jp/en/transport/bus/
+    note: 下载当天线路 PDF，并在前一晚复核山间巴士。
+  - title: 京都巴士 · 时刻表
+    url: https://www.kyotobus.jp/route/timetable/?locale=en
+    note: 查西芳寺与鸟居本一带的返程站牌和末班车。
+  - title: 南海电铁 · 机场交通
+    url: https://www.nankai.co.jp/en_railway/access-timetable
+    note: 比较关西机场至市区的车次；Rapi:t 需另购特急券。
 preTrip:
   weather:
     summary: 10 月底至 11 月上旬，纪伊山区早晚偏凉且可能降雨，京都与奈良昼夜温差明显。逐日天气应在出发前 7–10 天复核。
@@ -21,20 +37,20 @@ preTrip:
     - 离线地图与已下载巴士 PDF
   ticketTip: 11/05 黑潮号全车指定席，提前购买乘车券与指定席特急券；其他 JR 车程按需单买。西芳寺和需订位餐厅见每日提示。
 reminders:
-  - item: 10/05 10:00 JST 起关注并预订 11/05 黑潮号指定席，核对纪伊胜浦→天王寺车次
-    leadDays: 26
+  - item: 尽快查询并预订 11/05 黑潮号指定席，核对纪伊胜浦→天王寺车次
+    when: 现在
   - item: 核对熊野 11/1、11/2 两段行李转运凭证与取件时刻；若未订，当天转运需尽早申请或改用提前寄送
-    leadDays: 30
+    when: 尽快确认
   - item: 11/07 汤豆腐嵯峨野、11/08 名代おめん周末用餐，出发前电话确认或预约
-    leadDays: 7
+    when: 出发前一周
   - item: 电话确认 11/04 胜浦金枪鱼晚餐座位
-    leadDays: 7
+    when: 出发前一周
   - item: 核对两天早晚餐和路餐是否包含在订单；未确认就自备，并下载古道离线地图与巴士 PDF
-    leadDays: 7
+    when: 出发前一周
   - item: 查看逐日天气、山径状态与山区巴士公告
-    leadDays: 7
+    when: 出发前一周
   - item: 保存预约确认与关键车次截图
-    leadDays: 3
+    when: 出发前三天
 tips:
   - Dual Pilgrim 主选中边路全走方案①：11/1 滝尻→近露，11/2 近露→本宫，两天约 38 km、按官方清单盖 18 枚指定章；不用集齐另一套押印帐的 41 枚。若中途改乘巴士，不把记录算作方案①全走。正式双朝圣称号还需要完成西班牙圣地亚哥之路。
   - 2026 年 10 月 1 日的红叶预测显示京都市区红枫见顷约 12 月 11 日；本次 11 月上旬以高雄早叶和岚山初秋色为拍摄目标，不预设满山红叶。
