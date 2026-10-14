@@ -14,7 +14,49 @@ public/assets/                         # 本地图片
 
 新增目的地：在 `trips/` 新建含 `slug`、标题、日期、封面、摘要和排序的 Markdown，再在 `days/<slug>/` 新建每日 Markdown。首页和详情路由会在构建时自动生成。字段由 `src/content.config.ts` 校验；页面布局由 `src/pages/` 和 `src/components/` 统一控制。
 
-日本每日文件的 frontmatter 包含 `quick`、`planItems`、`practical`、`photoSpots`、`dining` 等结构化信息，供地图与卡片使用；正文可写自由说明。斯里兰卡的完整说明目前保存在 Markdown 正文中。
+### 如何修改日本行程
+
+每天只改一个文件，例如 `src/content/days/japan-2026/2026-11-07.md`。文件分成两部分：
+
+- 开头 `---` 之间是少量索引信息：日期、标题、地区（`stage`）、标签、`quick.route` 简版路线、`quick.fixed` 固定时间、`quick.note` 当天判断，以及 `mapPoints` 地图坐标。改动这些字段会更新总览和每日简版。
+- `---` 后面是详细攻略，直接用普通 Markdown 修改。建议用 `## 时间安排`、`## 当天判断`、`## 列车与交通班次`、`## 景点与入场`、`## 摄影机位`、`## 日出与日落`、`## 餐饮`、`## 现场操作与资料` 组织内容；没有内容的章节可以省略。
+- 地图仅从 `mapPoints` 读取地点和坐标。增删景点时，记得同步调整地图点。时间、餐厅、摄影说明等详细文字只写在 Markdown 正文，避免两处维护。
+
+例如：
+
+```md
+---
+trip: japan-2026
+order: 8
+date: "2026-11-07"
+weekday: 周六
+stage: 京都
+title: 西芳寺 → 岚山 → 奥嵯峨
+tags: [西芳寺预约, 奥嵯峨]
+quick:
+  route: 西芳寺 → 岚山 → 奥嵯峨
+  fixed: [西芳寺按预约邮件入场]
+  note: 西芳寺摄影优先。
+mapPoints:
+  - name: 西芳寺
+    lat: 34.9924
+    lng: 135.6841
+---
+
+## 时间安排
+
+| 时间 | 行程 |
+| --- | --- |
+| 上午 | 西芳寺预约入场。 |
+
+## 摄影机位
+
+### 西芳寺苔庭
+
+阴天拍苔藓与水面。[Google 地图](https://www.google.com/maps/search/?api=1&query=Saihoji+Kyoto)
+```
+
+全程交通与预订入口、行前待办、预算等放在 `src/content/trips/japan-2026.md`。斯里兰卡的完整说明也保存在每日 Markdown 正文中。
 
 仓库旧版根页面是迁移留档，不再作为新站的数据源。日后直接编辑 Markdown 文件，再运行构建即可。
 
