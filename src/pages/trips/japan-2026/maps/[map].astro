@@ -1,0 +1,130 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import { illustratedMaps, mapAsset, mapViewer } from '../../../../data/illustratedMaps';
+import type { IllustratedMap } from '../../../../data/illustratedMaps';
+
+export function getStaticPaths() {
+  return illustratedMaps.map(map => ({ params: { map: map.slug }, props: { map } }));
+}
+interface Props { map: IllustratedMap }
+const { map } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const tripUrl = `${base}trips/japan-2026/`;
+---
+<Layout title={`${map.title}旅行地图｜旅途手帖`} description={`${map.route}。${map.details}放大查看 SVG，下载高清 PNG 和 PDF。`}>
+  <main class="atlas-page">
+    <div class="atlas-heading">
+      <a class="back-link" href={`${tripUrl}#illustrated-maps`}>← 返回日本行程</a>
+      <div class="title-row">
+        <div><span class="eyebrow">MAP {map.number} / 04 · {map.dates}</span><h1>{map.title}<span>旅行地图</span></h1></div>
+        <div class="download-actions">
+          <a href={mapAsset(map.slug, 'png')} download={`${map.title}-旅行地图.png`}>下载 PNG ↓</a>
+          <a href={mapAsset(map.slug, 'pdf')} download={`${map.title}-旅行地图.pdf`}>下载 PDF ↓</a>
+        </div>
+      </div>
+      <p class="route-copy">{map.route}</p>
+      <nav class="atlas-tabs" aria-label="切换旅行地图">
+        {illustratedMaps.map(item => <a href={mapViewer(item.slug)} aria-current={item.slug === map.slug ? 'page' : undefined}>{item.number} {item.title}</a>)}
+      </nav>
+    </div>
+    <section class="viewer-shell" aria-label={`${map.title} SVG 地图查看器`}>
+      <div class="viewer-toolbar">
+        <div class="zoom-controls" hidden>
+          <button type="button" data-zoom-out aria-label="缩小地图">−</button>
+          <output id="zoom-value" aria-live="polite" aria-label="当前缩放">适合宽度</output>
+          <button type="button" data-zoom-in aria-label="放大地图">＋</button>
+          <button type="button" data-fit>适合宽度</button>
+          <button type="button" data-original>100%</button>
+        </div>
+        <a class="original-link" href={mapAsset(map.slug, 'svg')} target="_blank" rel="noopener noreferrer">打开 SVG 原图 ↗</a>
+      </div>
+      <p id="viewer-help" class="viewer-help">放大后可上下、左右滚动查看；手机也可双指放大页面。</p>
+      <div class="map-viewport" tabindex="0" role="region" aria-label="地图滚动区域" aria-describedby="viewer-help">
+        <img id="atlas-image" src={mapAsset(map.slug, 'svg')} alt={`${map.title}完整旅行地图：${map.route}。${map.details}`} width="2800" height="4700" fetchpriority="high" />
+      </div>
+      <p class="image-error" hidden>地图暂时未加载成功，请<a href={mapAsset(map.slug, 'svg')}>打开 SVG 原图</a>，或使用上方下载入口。</p>
+    </section>
+    <div class="atlas-footnote">
+      <p>{map.details} 动线为分区示意，班次与开放时间请出发前复核。</p>
+      <a href={`${tripUrl}#day-${map.day}`}>阅读对应每日行程 ↗</a>
+      <span>PNG 4200 × 7050 · PDF 单页长幅 · SVG 可放大</span>
+    </div>
+  </main>
+</Layout>
+<script>
+  const viewport = document.querySelector<HTMLDivElement>('.map-viewport');
+  const image = document.querySelector<HTMLImageElement>('#atlas-image');
+  const controls = document.querySelector<HTMLDivElement>('.zoom-controls');
+  const output = document.querySelector<HTMLOutputElement>('#zoom-value');
+  const smaller = document.querySelector<HTMLButtonElement>('[data-zoom-out]');
+  const larger = document.querySelector<HTMLButtonElement>('[data-zoom-in]');
+  const fit = document.querySelector<HTMLButtonElement>('[data-fit]');
+  const original = document.querySelector<HTMLButtonElement>('[data-original]');
+  if (viewport && image && controls && output && smaller && larger && fit && original) {
+    let scale = 1;
+    let fitting = true;
+    const fitScale = () => Math.min((viewport.clientWidth - 24) / 2800, 1);
+    const applyScale = (value: number, preserveCenter = true) => {
+      const previousWidth = image.getBoundingClientRect().width;
+      const previousHeight = image.getBoundingClientRect().height;
+      const x = (viewport.scrollLeft + viewport.clientWidth / 2) / previousWidth;
+      const y = (viewport.scrollTop + viewport.clientHeight / 2) / previousHeight;
+      scale = Math.min(2, Math.max(Math.min(fitScale(), .25), value));
+      image.style.width = `${2800 * scale}px`;
+      image.style.maxWidth = 'none';
+      output.value = `${Math.round(scale * 100)}%`;
+      smaller.disabled = scale <= Math.min(fitScale(), .25) + .001;
+      larger.disabled = scale >= 2;
+      if (preserveCenter) {
+        viewport.scrollLeft = x * 2800 * scale - viewport.clientWidth / 2;
+        viewport.scrollTop = y * 4700 * scale - viewport.clientHeight / 2;
+      }
+    };
+    controls.hidden = false;
+    applyScale(fitScale(), false);
+    smaller.addEventListener('click', () => { fitting = false; applyScale(scale / 1.4); });
+    larger.addEventListener('click', () => { fitting = false; applyScale(scale * 1.4); });
+    fit.addEventListener('click', () => {
+      fitting = true;
+      applyScale(fitScale(), false);
+      viewport.scrollTo({ left: 0, top: 0 });
+    });
+    original.addEventListener('click', () => { fitting = false; applyScale(1); });
+    new ResizeObserver(() => { if (fitting) applyScale(fitScale(), false); }).observe(viewport);
+    const reportError = () => {
+      const message = document.querySelector<HTMLParagraphElement>('.image-error');
+      if (message) message.hidden = false;
+    };
+    image.addEventListener('error', reportError);
+    if (image.complete && image.naturalWidth === 0) reportError();
+  }
+</script>
+<style>
+  .atlas-page{width:min(1520px,calc(100% - 48px));margin:26px auto 0}
+  .back-link{font-size:13px;color:var(--pine);text-decoration:none}
+  .title-row{display:flex;align-items:center;justify-content:space-between;gap:24px;margin-top:20px}
+  h1{font-size:38px;margin:6px 0 0}h1 span{font-size:19px;margin-left:16px;color:var(--muted);font-weight:500}
+  .route-copy{font-size:14px;color:var(--muted);margin:12px 0 18px}
+  .download-actions{display:flex;gap:8px;flex-wrap:wrap}
+  .download-actions a{display:inline-flex;align-items:center;min-height:44px;background:var(--forest);color:white;border-radius:9px;padding:9px 16px;font-size:13px;font-weight:700;text-decoration:none}
+  .download-actions a:hover{background:var(--pine)}
+  .atlas-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+  .atlas-tabs a{border:1px solid var(--line);border-radius:999px;padding:7px 15px;font-size:13px;text-decoration:none}
+  .atlas-tabs [aria-current=page]{background:#e5ebde;border-color:#a9b99d;color:var(--forest);font-weight:700}
+  .viewer-shell{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--card)}
+  .viewer-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;flex-wrap:wrap}
+  .zoom-controls{display:flex;align-items:center;gap:6px}
+  .zoom-controls[hidden]{display:none}
+  button{min-width:42px;min-height:42px;border:1px solid var(--line);border-radius:7px;background:#fffef9;color:var(--forest);padding:5px 11px;cursor:pointer;font-size:13px}
+  button:hover:not(:disabled){background:#e9efe4}button:disabled{opacity:.35;cursor:default}
+  output{min-width:53px;text-align:center;font-size:12px;font-variant-numeric:tabular-nums;color:var(--muted)}
+  .original-link{font-size:12px;color:var(--pine);padding:9px 0}
+  .viewer-help{font-size:12px;color:var(--muted);margin:0;padding:0 16px 10px}
+  .map-viewport{height:76vh;height:76dvh;min-height:360px;max-height:1100px;overflow:auto;background:#dce0d2;padding:12px;overscroll-behavior:contain;scrollbar-color:#8c9b86 #dce0d2}
+  #atlas-image{display:block;max-width:100%;width:100%;height:auto;margin:0 auto;box-shadow:0 4px 22px #243b2526}
+  .image-error{padding:10px 18px;color:var(--accent)}
+  .atlas-footnote{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 20px;padding:14px 2px;color:var(--muted);font-size:12px}
+  .atlas-footnote p{margin:0;flex-basis:100%}.atlas-footnote a{color:var(--pine)}
+  :is(a,button,.map-viewport):focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+  @media(max-width:680px){.atlas-page{width:calc(100% - 24px);margin-top:18px}.title-row{display:block;margin-top:15px}h1{font-size:30px}h1 span{font-size:16px}.download-actions{margin-top:16px}.download-actions a{flex:1;justify-content:center}.viewer-toolbar{padding:10px;gap:3px}.viewer-help{padding-inline:10px}.zoom-controls{gap:4px}button{padding:4px 9px}.atlas-tabs{gap:6px}.atlas-tabs a{padding:7px 11px}.map-viewport{height:70vh;height:70dvh}.original-link{margin-left:auto}}
+</style>

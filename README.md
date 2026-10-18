@@ -60,6 +60,17 @@ mapPoints:
 
 仓库旧版根页面是迁移留档，不再作为新站的数据源。日后直接编辑 Markdown 文件，再运行构建即可。
 
+### 日本旅行插画地图
+
+日本行程页的「插画地图」包含熊野古道、奈良、京都、大阪四张地图。每张都有独立查看页，支持缩放、适合宽度、切换地图，以及 PNG / PDF 下载；无 JavaScript 时仍可阅读地图、打开 SVG 原图和下载。
+
+- `src/data/illustratedMaps.ts`：四张地图的标题、覆盖日期、路线与链接。
+- `src/components/IllustratedMaps.astro`：日本行程页的地图卡片。
+- `src/pages/trips/japan-2026/maps/[map].astro`：独立 SVG 查看器。
+- `public/assets/maps/japan-2026/`：可直接部署的 SVG、4200 × 7050 PNG、单页长幅 PDF 和 WebP 预览。SVG 内嵌中文字体子集；PDF 使用高清图像，非 A4 分页。
+
+地图是 2026-10-18 的行程快照，修改每日 Markdown 不会自动重绘插画。当前制图源文件及导出说明保存在同级工作区的 `../旅行地图/japan-2026/`，完成更新后重新生成并复制到上述资源目录。网站无需安装制图依赖。所有内部链接均遵循 Astro `base`，适配 GitHub Pages 的 `/travel` 前缀。
+
 ## 本地运行
 
 ```sh
