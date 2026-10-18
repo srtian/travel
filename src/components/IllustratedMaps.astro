@@ -1,0 +1,58 @@
+---
+import { illustratedMaps, mapAsset, mapViewer } from '../data/illustratedMaps';
+---
+<section id="illustrated-maps" class="illustrated-maps" aria-labelledby="illustrated-maps-title">
+  <div class="section-heading">
+    <div><span class="eyebrow">A JOURNEY IN FOUR MAPS</span><h2 id="illustrated-maps-title">把旅途装进口袋</h2></div>
+    <p>四张插画地图，跟着动线一步步走</p>
+  </div>
+  <p class="maps-intro">沿用每日行程，把交通、时间和现场提醒画进一张手帖。打开 SVG 可放大阅读，也可以下载高清 PNG 或 PDF，离线带在身边。</p>
+  <div class="illustrated-grid">
+    {illustratedMaps.map(map => (
+      <article class="map-card panel" style={`--map-color:${map.color}`}>
+        <a class="map-preview" href={mapViewer(map.slug)} aria-label={`查看${map.title}旅行地图 SVG`}>
+          <img src={mapAsset(map.slug, 'preview.webp')} alt={`${map.title}插画地图预览：${map.route}`} width="1120" height="848" loading="lazy" decoding="async" />
+          <span class="preview-label">放大看地图 <span aria-hidden="true">↗</span></span>
+        </a>
+        <div class="map-copy">
+          <div class="map-meta"><span>MAP {map.number}</span><span>{map.dates}</span></div>
+          <h3>{map.title}</h3>
+          <p class="map-summary">{map.summary}</p>
+          <p class="map-route">{map.route}</p>
+          <p class="map-details">{map.details}</p>
+          <div class="map-actions">
+            <a class="view-link" href={mapViewer(map.slug)} aria-label={`放大查看${map.title} SVG`}>查看 SVG <span aria-hidden="true">↗</span></a>
+            <a href={mapAsset(map.slug, 'png')} download={`${map.title}-旅行地图.png`} aria-label={`下载${map.title}高清 PNG`}>PNG ↓</a>
+            <a href={mapAsset(map.slug, 'pdf')} download={`${map.title}-旅行地图.pdf`} aria-label={`下载${map.title} PDF`}>PDF ↓</a>
+          </div>
+        </div>
+      </article>
+    ))}
+  </div>
+  <p class="map-caption">动线为分区示意，实际导航请使用地图应用；班次、预约与开放时间以出发前公告为准。</p>
+</section>
+<style>
+  .illustrated-maps{margin-top:46px;scroll-margin-top:100px}
+  .maps-intro{max-width:780px;color:var(--muted);margin:-4px 0 24px;font-size:15px}
+  .illustrated-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
+  .map-card{overflow:hidden}
+  .map-preview{display:block;position:relative;overflow:hidden;background:#e5e7d4;aspect-ratio:1120/848}
+  .map-preview img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .35s ease}
+  .map-preview:hover img{transform:scale(1.025)}
+  .preview-label{position:absolute;bottom:14px;right:14px;border:1px solid #ffffff9c;border-radius:999px;padding:6px 13px;background:#fffaf1ed;color:var(--forest);font-size:12px;box-shadow:0 2px 12px #183a3215}
+  .map-copy{padding:23px 25px 24px}
+  .map-meta{display:flex;justify-content:space-between;gap:12px;color:var(--map-color);font-size:12px;font-weight:700;letter-spacing:.06em}
+  h3{font-size:30px;margin:10px 0 9px}
+  .map-summary{margin:0 0 13px;font-size:15px}
+  .map-route{font-size:13px;color:var(--map-color);margin:0 0 5px;line-height:1.7}
+  .map-details{font-size:13px;color:var(--muted);margin:0}
+  .map-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+  .map-actions a{display:inline-flex;justify-content:center;align-items:center;gap:12px;min-height:44px;padding:8px 15px;border:1px solid var(--line);border-radius:9px;text-decoration:none;font-size:13px;font-weight:700}
+  .map-actions a:hover{border-color:var(--map-color);background:#eef1e7}
+  .map-actions .view-link{margin-right:auto;background:var(--forest);border-color:var(--forest);color:#fff}
+  .map-actions .view-link:hover{background:var(--pine)}
+  a:focus-visible{outline:3px solid var(--gold);outline-offset:-3px}
+  .map-caption{color:var(--muted);font-size:12px;margin-top:17px}
+  @media(max-width:680px){.illustrated-grid{grid-template-columns:1fr;gap:18px}.map-copy{padding:20px}.map-actions a{padding:8px 12px}}
+  @media(prefers-reduced-motion:reduce){.map-preview img{transition:none}}
+</style>
